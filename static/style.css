@@ -1,0 +1,72 @@
+/* 1. Glassmorphism card */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* 2. Custom focus glow */
+input:focus, textarea:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* 3. Gradient Button */
+.btn-gradient {
+    background: linear-gradient(135deg, #10b981, #0d9488);
+}
+.btn-gradient:hover:not(:disabled) {
+    background: linear-gradient(135deg, #34d399, #14b8a6);
+}
+
+/* 4. Fade-in-up animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.fade-in-up {
+    opacity: 0;
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* 5. Staggered animation delays */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+.delay-6 { animation-delay: 0.6s; }
+
+/* 6. Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0f1117;
+}
+::-webkit-scrollbar-thumb {
+    background: #2d3148;
+    border-radius: 3px;
+}
+
+/* 7. Spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-top-color: #10b981;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

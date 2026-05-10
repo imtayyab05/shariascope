@@ -7,131 +7,186 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         body {
-            background-color: #0f1117;
-            color: #ffffff;
+            background: linear-gradient(-45deg, #022c22, #064e3b, #0f172a, #020617);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #f8fafc;
         }
         .form-input {
-            background-color: #0f1117;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 0.5rem;
             padding: 12px;
             width: 100%;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.3s ease;
             outline: none;
         }
-        .form-input:focus {
-            border-color: #10b981; /* emerald-500 */
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        .form-input:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, 0.3);
         }
-        .sharia-card {
-            background-color: #1a1d2e;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        .form-input:focus {
+            border-color: #34d399; /* emerald-400 */
+            background-color: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.2);
+        }
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        .glass-card {
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #059669, #10b981);
+            background-size: 200% 200%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-gradient:hover {
+            background-position: 100% 0;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .hero-title {
+            text-shadow: 0 0 40px rgba(52, 211, 153, 0.3);
         }
     </style>
 </head>
-<body class="min-h-screen font-sans antialiased">
-    <div class="max-w-[680px] mx-auto pt-16 pb-12 px-4">
+<body class="min-h-screen font-sans antialiased flex flex-col justify-center">
+    <div class="max-w-[680px] mx-auto pt-10 pb-12 px-4 w-full" x-data="screeningApp()">
         
-        <!-- Hero Section -->
-        <div class="text-center mb-10">
-            <div class="text-3xl mb-4">🌙</div>
-            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-wider mb-3">ShariaScope</h1>
-            <p class="text-gray-400 text-lg mb-8">AI-powered Shariah compliance screening for public companies</p>
-            <hr class="border-t border-gray-800 w-full" />
+        <!-- Hero Landing Page -->
+        <div x-show="!showForm" x-transition.opacity.duration.500ms class="text-center py-20">
+            <div class="text-6xl mb-6 transform hover:scale-110 transition-transform duration-500">🌙</div>
+            <h1 class="text-5xl md:text-6xl font-bold text-white tracking-wider mb-6 hero-title">ShariaScope</h1>
+            <p class="text-emerald-100/70 text-xl mb-12 max-w-md mx-auto leading-relaxed">
+                AI-powered Shariah compliance screening for public companies. Built on AAOIFI standards.
+            </p>
+            <button type="button" @click="showForm = true" class="inline-block btn-gradient text-white font-bold py-4 px-10 rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] text-lg">
+                Start Screening
+            </button>
         </div>
 
-        <!-- Main Card -->
-        <div x-data="screeningApp()" class="glass-card rounded-xl p-8 md:p-10 shadow-2xl">
+        <!-- Form Interface -->
+        <div x-show="showForm" x-transition.opacity.duration.500ms style="display: none;">
             
-            <!-- Mode Toggle -->
-            <div class="flex justify-center mb-8">
-                <div class="bg-[#0f1117] border border-[rgba(255,255,255,0.1)] rounded-full p-1 flex">
-                    <button type="button" @click="mode = 'manual'" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200" :class="mode === 'manual' ? 'btn-gradient text-white shadow-md' : 'text-gray-400 hover:text-gray-200'">Manual Entry</button>
-                    <button type="button" @click="mode = 'auto'" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2" :class="mode === 'auto' ? 'btn-gradient text-white shadow-md' : 'text-gray-400 hover:text-gray-200'">
-                        Auto Collect
-                        <span class="bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold">Beta</span>
-                    </button>
-                </div>
+            <!-- Header for Form View -->
+            <div class="text-center mb-10">
+                <div class="text-3xl mb-3 cursor-pointer transform hover:scale-110 transition-transform duration-300" @click="showForm = false">🌙</div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white tracking-wider mb-2">ShariaScope</h1>
+                <p class="text-emerald-100/50 text-sm mb-6">AI-powered Shariah compliance screening</p>
             </div>
 
-            <form @submit.prevent="submitForm" class="space-y-6">
+            <!-- Main Card -->
+            <div class="glass-card rounded-2xl p-8 md:p-10">
                 
-                <!-- Manual Mode Fields -->
-                <div x-show="mode === 'manual'" x-transition class="space-y-6">
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Company Name</label>
-                        <input x-model="formData.company_name" type="text" :required="mode === 'manual'" class="form-input">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Business Description <span class="text-gray-500 lowercase normal-case font-normal">(Optional)</span></label>
-                        <textarea x-model="formData.business_description" rows="5" placeholder="Describe what this company does and how it makes money. The more detail you provide the more accurate the screening will be. If left blank, it will be fetched automatically." class="form-input"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Total Assets</label>
-                        <input x-model="formData.total_assets" type="number" step="any" class="form-input">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Total Debt</label>
-                        <input x-model="formData.total_debt" type="number" step="any" class="form-input">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Total Revenue</label>
-                        <input x-model="formData.total_revenue" type="number" step="any" class="form-input">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Interest Income</label>
-                        <input x-model="formData.interest_income" type="number" step="any" class="form-input">
-                        <p class="text-xs text-gray-500 mt-2">Leave as 0 if not applicable or unknown</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Additional Notes</label>
-                        <textarea x-model="formData.additional_notes" rows="3" placeholder="Any recent news, acquisitions, new business lines, or other context the agent should consider." class="form-input"></textarea>
+                <!-- Mode Toggle -->
+                <div class="flex justify-center mb-8">
+                    <div class="bg-slate-900/50 border border-white/10 rounded-full p-1 flex">
+                        <button type="button" @click="mode = 'manual'" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200" :class="mode === 'manual' ? 'btn-gradient text-white shadow-md' : 'text-gray-400 hover:text-white'">Manual Entry</button>
+                        <button type="button" @click="mode = 'auto'" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2" :class="mode === 'auto' ? 'btn-gradient text-white shadow-md' : 'text-gray-400 hover:text-white'">
+                            Auto Collect
+                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold">Beta</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Auto Mode Fields -->
-                <div x-show="mode === 'auto'" x-transition style="display: none;">
-                    <label class="block text-xs uppercase text-gray-400 font-semibold tracking-wider mb-2">Company Name</label>
-                    <input x-model="autoCompanyName" type="text" placeholder="Enter company name (e.g. Apple, Meezan Bank, Engro)" class="form-input" :required="mode === 'auto'">
+                <form @submit.prevent="submitForm" class="space-y-6">
                     
-                    <div class="mt-4 bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 flex gap-3 text-sm text-blue-200">
-                        <div class="text-blue-400 text-lg">ℹ️</div>
-                        <p>The agent will automatically search for business information and available financial data. For complete screening accuracy, use Manual Entry mode with verified financial figures.</p>
+                    <!-- Manual Mode Fields -->
+                    <div x-show="mode === 'manual'" x-transition class="space-y-6">
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Company Name</label>
+                            <input x-model="formData.company_name" type="text" :required="mode === 'manual'" class="form-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Business Description <span class="text-gray-400 lowercase normal-case font-normal">(Optional)</span></label>
+                            <textarea x-model="formData.business_description" rows="5" placeholder="Describe what this company does and how it makes money. The more detail you provide the more accurate the screening will be. If left blank, it will be fetched automatically." class="form-input"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Total Assets</label>
+                            <input x-model="formData.total_assets" type="number" step="any" class="form-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Total Debt</label>
+                            <input x-model="formData.total_debt" type="number" step="any" class="form-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Total Revenue</label>
+                            <input x-model="formData.total_revenue" type="number" step="any" class="form-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Interest Income</label>
+                            <input x-model="formData.interest_income" type="number" step="any" class="form-input">
+                            <p class="text-xs text-gray-400 mt-2">Leave as 0 if not applicable or unknown</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Additional Notes</label>
+                            <textarea x-model="formData.additional_notes" rows="3" placeholder="Any recent news, acquisitions, new business lines, or other context the agent should consider." class="form-input"></textarea>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Error Banner -->
-                <div x-show="error !== ''" x-transition class="bg-red-900/40 border border-red-500/30 text-red-200 rounded-lg p-4 flex justify-between items-start" style="display: none;">
-                    <span x-text="error" class="text-sm"></span>
-                    <button type="button" @click="error = ''" class="text-red-400 hover:text-white ml-3 font-bold">&times;</button>
-                </div>
+                    <!-- Auto Mode Fields -->
+                    <div x-show="mode === 'auto'" x-transition style="display: none;">
+                        <label class="block text-xs uppercase text-emerald-400 font-bold tracking-wider mb-2">Company Name</label>
+                        <input x-model="autoCompanyName" type="text" placeholder="Enter company name (e.g. Apple, Meezan Bank, Engro)" class="form-input" :required="mode === 'auto'">
+                        
+                        <div class="mt-4 bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4 flex gap-3 text-sm text-emerald-100/80">
+                            <div class="text-emerald-400 text-lg">ℹ️</div>
+                            <p>The agent will automatically search for business information and available financial data. For complete screening accuracy, use Manual Entry mode with verified financial figures.</p>
+                        </div>
+                    </div>
 
-                <!-- Submit Button -->
-                <button type="submit" :disabled="loading" class="w-full btn-gradient text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center">
-                    <span x-show="!loading" x-text="mode === 'manual' ? 'Screen This Company' : 'Auto Search and Screen'"></span>
-                    <span x-show="loading" style="display: none;" class="flex items-center gap-3">
-                        <div class="spinner"></div>
-                        <span x-text="loadingMessage"></span>
-                    </span>
-                </button>
+                    <!-- Error Banner -->
+                    <div x-show="error !== ''" x-transition class="bg-red-900/40 border border-red-500/30 text-red-200 rounded-lg p-4 flex justify-between items-start" style="display: none;">
+                        <span x-text="error" class="text-sm font-medium"></span>
+                        <button type="button" @click="error = ''" class="text-red-400 hover:text-white ml-3 font-bold">&times;</button>
+                    </div>
 
-            </form>
+                    <!-- Submit Button -->
+                    <button type="submit" :disabled="loading" class="w-full btn-gradient text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center mt-8">
+                        <span x-show="!loading" x-text="mode === 'manual' ? 'Screen This Company' : 'Auto Search and Screen'"></span>
+                        <span x-show="loading" style="display: none;" class="flex items-center gap-3">
+                            <div class="spinner"></div>
+                            <span x-text="loadingMessage"></span>
+                        </span>
+                    </button>
+
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('screeningApp', () => ({
+                showForm: false,
                 mode: 'manual',
                 loading: false,
                 error: '',
